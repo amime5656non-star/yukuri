@@ -1,0 +1,119 @@
+HTML
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ゆくり</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: "Hiragino Mincho ProN", serif;
+  background: #ffffff;
+  color: #222;
+}
+
+.screen {
+  display: none;
+  height: 100vh;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.active {
+  display: block;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.fade {
+  opacity: 0;
+  transition: opacity 1.5s;
+}
+
+.fade.show {
+  opacity: 1;
+}
+
+.button {
+  margin: 10px 0;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.button:active {
+  background: #f5f5f5;
+}
+</style>
+
+</head>
+<body>
+
+<!-- 起動画面 -->
+<div id="start" class="screen active center fade">
+  <div id="startText">ここに、ある</div>
+</div>
+
+<!-- ホーム -->
+<div id="home" class="screen">
+  <div>場</div>
+  <div class="button" onclick="openPlace('寝室（北）')">寝室（北）</div>
+  <div class="button" onclick="openPlace('寝室（南）')">寝室（南）</div>
+  <div class="button" onclick="openPlace('南西の部屋')">南西の部屋</div>
+  <div class="button" onclick="openPlace('車')">車</div>
+  <div class="button" onclick="openPlace('アトリエ')">アトリエ</div>
+  <div class="button" onclick="openPlace('外')">外</div>
+</div>
+
+<!-- 記録画面 -->
+<div id="record" class="screen">
+  <div id="placeTitle"></div>
+
+  <h3>体</h3>
+  <div class="button">冷え</div>
+  <div class="button">腰痛</div>
+  <div class="button">頭痛</div>
+  <div class="button">寝不足</div>
+
+  <h3>石</h3>
+  <div class="button">アメジスト</div>
+  <div class="button">チャロアイト</div>
+
+  <h3>香り</h3>
+  <div class="button">ひのき</div>
+  <div class="button">ラベンダー</div>
+
+  <h3>空間</h3>
+  <div class="button">布</div>
+  <div class="button">流木</div>
+  <div class="button">守り</div>
+
+  <div style="margin-top:30px;" onclick="backHome()">戻る</div>
+</div>
+
+<script>
+setTimeout(() => {
+  document.getElementById("start").classList.remove("active");
+  document.getElementById("home").classList.add("active");
+}, 2000);
+
+function openPlace(name){
+  document.getElementById("home").classList.remove("active");
+  document.getElementById("record").classList.add("active");
+  document.getElementById("placeTitle").innerText = name;
+}
+
+function backHome(){
+  document.getElementById("record").classList.remove("active");
+  document.getElementById("home").classList.add("active");
+}
+</script>
+
+</body>
+</html>
