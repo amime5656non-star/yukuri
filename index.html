@@ -7,55 +7,36 @@ HTML
 <title>ゆくり</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: "Hiragino Mincho ProN", serif;
-  background: #f8f6f2;
-  color: #2f2f2f;
+body{
+  margin:0;
+  font-family:"Hiragino Mincho ProN",serif;
+  background:#f8f6f2;
+  color:#2f2f2f;
 }
-
-.container {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 40px 22px;
+.container{
+  max-width:520px;
+  margin:auto;
+  padding:30px;
 }
-
-h1 {
-  text-align: center;
-  margin-bottom: 40px;
+.section{margin-bottom:25px;}
+label{font-size:13px;color:#777;}
+select,input{
+  width:100%;
+  border:none;
+  border-bottom:1px solid #ddd;
+  padding:10px;
+  background:transparent;
 }
-
-.section {
-  margin-bottom: 25px;
+.fixed{
+  font-size:12px;
+  color:#666;
+  line-height:1.6;
+  margin-top:8px;
 }
-
-label {
-  font-size: 13px;
-  color: #777;
-}
-
-select, input {
-  width: 100%;
-  border: none;
-  border-bottom: 1px solid #ddd;
-  padding: 10px;
-  background: transparent;
-}
-
-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 20px;
-}
-
-.record {
-  border-bottom: 1px solid #eee;
-  padding: 10px 0;
-  font-size: 13px;
-}
-
-.balance {
-  margin: 20px 0;
+.record{
+  border-bottom:1px solid #eee;
+  padding:10px 0;
+  font-size:12px;
 }
 </style>
 </head>
@@ -65,19 +46,24 @@ button {
 
 <h1>ゆくり</h1>
 
+<!-- 🌿 場 -->
 <div class="section">
 <label>場</label>
-<select id="place">
-<option>寝室 北</option>
-<option>寝室 南</option>
-<option>南西の部屋</option>
+<select id="place" onchange="showSpace()">
+<option>寝室 北枕元</option>
+<option>寝室 南祭壇</option>
+<option>南西の部屋 入口</option>
+<option>南西の部屋 マントル</option>
 <option>アトリエ</option>
 <option>車</option>
 </select>
+
+<div class="fixed" id="space"></div>
 </div>
 
+<!-- 🌿 体調 -->
 <div class="section">
-<label>体調（複数選択）</label>
+<label>体調</label>
 <select id="health" multiple>
 <option value="水">冷え</option>
 <option value="水">腰痛</option>
@@ -88,161 +74,128 @@ button {
 </select>
 </div>
 
+<!-- 🌿 指輪 -->
 <div class="section">
-<label>石</label>
-<select id="stone" multiple>
-<option>アメジスト</option>
-<option>セレナイト</option>
-<option>チャロアイト</option>
-<option>ラピスラズリ</option>
+<label>指輪</label>
+<select id="ring" multiple>
+<option>ペリドット</option>
+<option>レインボームーンストーン</option>
+<option>ウォーターオパール</option>
+<option>スタールビー</option>
+<option>フラワールチルクォーツ</option>
+<option>ブルートパーズ</option>
+<option>シルバーリング</option>
+</select>
+</div>
+
+<!-- 🌿 持ち歩き石 -->
+<div class="section">
+<label>持ち歩き</label>
+<select id="carry" multiple>
+<option>タイガーアイ</option>
+<option>ソーダライト</option>
 <option>フローライト</option>
+<option>アメジスト</option>
+<option>スギライト</option>
+<option>水晶</option>
+<option>ブルーレースアゲート</option>
+<option>シトリン</option>
+<option>ラピスラズリ</option>
+<option>ラブラドライト</option>
+<option>レッドジャスパー</option>
+<option>アマゾナイト</option>
 </select>
 </div>
 
+<!-- 🌿 香り追加 -->
 <div class="section">
-<label>香り</label>
-<select id="scent" multiple>
-<option>ひのき</option>
-<option>ラベンダー</option>
-<option>ベチバー</option>
-<option>ミント</option>
-</select>
-</div>
-
-<div class="section">
-<label>お茶</label>
-<input id="tea">
+<label>香り（追加）</label>
+<input id="scent">
 </div>
 
 <button onclick="save()">記す</button>
 
-<div class="balance" id="balance"></div>
-
+<div id="balance"></div>
 <div id="list"></div>
 
 </div>
 
 <script>
 
-function save(){
-  const selected = Array.from(health.selectedOptions).map(o=>o.value);
+// 🌿 空間表示
+function showSpace(){
+  let p = place.value;
+  let text="";
 
-  let count = {木:0,火:0,土:0,金:0,水:0};
+  if(p==="寝室 北枕元"){
+    text="香りなし｜アゲート2・緑柱石・セレナイト・アメジスト";
+  }
+  if(p==="寝室 南祭壇"){
+    text="パロサント｜オレンジカルセドニー・ムーンストーン・ピンクサファイア・翡翠・チャロアイト";
+  }
+  if(p==="南西の部屋 入口"){
+    text="ひのき＋ラベンダー｜水晶";
+  }
+  if(p==="南西の部屋 マントル"){
+    text="ベチバー｜ラベンダー翡翠・グリーンアゲート";
+  }
+  if(p==="アトリエ"){
+    text="砂漠のバラ・方解石・石英・ラピス・フローライト｜ライアー・ラタン椅子";
+  }
+  if(p==="車"){
+    text="ひのき＋オレンジ｜チャロアイト";
+  }
+
+  space.innerText=text;
+}
+
+// 🌿 保存
+function save(){
+  let selected = Array.from(health.selectedOptions).map(o=>o.value);
+  let count={木:0,火:0,土:0,金:0,水:0};
   selected.forEach(v=>count[v]++);
 
-  const data = {
-    place: place.value,
-    health: selected,
-    stone: Array.from(stone.selectedOptions).map(o=>o.value),
-    scent: Array.from(scent.selectedOptions).map(o=>o.value),
-    tea: tea.value,
-    balance: count
+  const data={
+    place:place.value,
+    ring:Array.from(ring.selectedOptions).map(o=>o.value),
+    carry:Array.from(carry.selectedOptions).map(o=>o.value),
+    scent:scent.value,
+    balance:count
   };
 
-  let records = JSON.parse(localStorage.getItem('r')||'[]');
-  records.unshift(data);
-  localStorage.setItem('r', JSON.stringify(records));
+  let r=JSON.parse(localStorage.getItem('r')||'[]');
+  r.unshift(data);
+  localStorage.setItem('r',JSON.stringify(r));
 
   show();
   calc();
 }
 
+// 🌿 表示
 function show(){
-  let records = JSON.parse(localStorage.getItem('r')||'[]');
+  let r=JSON.parse(localStorage.getItem('r')||'[]');
   list.innerHTML="";
-
-  records.forEach(r=>{
+  r.forEach(x=>{
     let d=document.createElement('div');
     d.className="record";
-    d.innerHTML=`${r.place}｜体調:${r.health.join()}｜石:${r.stone.join()}｜香り:${r.scent.join()}`;
+    d.innerHTML=`${x.place}｜指輪:${x.ring.join()}｜持:${x.carry.join()}`;
     list.appendChild(d);
   });
 }
 
+// 🌿 五行
 function calc(){
-  let records = JSON.parse(localStorage.getItem('r')||'[]');
-  let total = {木:0,火:0,土:0,金:0,水:0};
+  let r=JSON.parse(localStorage.getItem('r')||'[]');
+  let t={木:0,火:0,土:0,金:0,水:0};
 
-  records.forEach(r=>{
-    for(let k in r.balance){
-      total[k]+=r.balance[k];
-    }
+  r.forEach(x=>{
+    for(let k in x.balance){t[k]+=x.balance[k]}
   });
 
-  balance.innerText =
-   "五行バランス → 木:"+total.木+" 火:"+total.火+" 土:"+total.土+" 金:"+total.金+" 水:"+total.水;
-
-  message(total);
+  balance.innerText=`木:${t.木} 火:${t.火} 土:${t.土} 金:${t.金} 水:${t.水}`;
 }
 
-function message(total){
-  let max = Object.keys(total).reduce((a,b)=> total[a]>total[b]?a:b);
-
-  let msg = "";
-
-  if(max=="水") msg="あたためて、安心する時間を";
-  if(max=="火") msg="静かに、落ち着きを取り戻す日";
-  if(max=="木") msg="流れをよくして、巡らせる";
-  if(max=="土") msg="ゆっくり整えて、満たす";
-  if(max=="金") msg="手放して、軽くする";
-
-  document.getElementById("balance").innerHTML += "<br><br>🌿 "+msg;
-}
-
-show();
-calc();
-
-  </t>
-
-function save(){
-  const selected = Array.from(health.selectedOptions).map(o=>o.value);
-
-  let count = {木:0,火:0,土:0,金:0,水:0};
-  selected.forEach(v=>count[v]++);
-
-  const data = {
-    place: place.value,
-    health: selected,
-    stone: Array.from(stone.selectedOptions).map(o=>o.value),
-    scent: Array.from(scent.selectedOptions).map(o=>o.value),
-    tea: tea.value,
-    balance: count
-  };
-
-  let records = JSON.parse(localStorage.getItem('r')||'[]');
-  records.unshift(data);
-  localStorage.setItem('r', JSON.stringify(records));
-
-  show();
-  calc();
-}
-
-function show(){
-  let records = JSON.parse(localStorage.getItem('r')||'[]');
-  list.innerHTML="";
-
-  records.forEach(r=>{
-    let d=document.createElement('div');
-    d.className="record";
-    d.innerHTML=`${r.place}｜体調:${r.health.join()}｜石:${r.stone.join()}｜香り:${r.scent.join()}`;
-    list.appendChild(d);
-  });
-}
-
-function calc(){
-  let records = JSON.parse(localStorage.getItem('r')||'[]');
-  let total = {木:0,火:0,土:0,金:0,水:0};
-
-  records.forEach(r=>{
-    for(let k in r.balance){
-      total[k]+=r.balance[k];
-    }
-  });
-
-  balance.innerText =
-   "五行バランス → 木:"+total.木+" 火:"+total.火+" 土:"+total.土+" 金:"+total.金+" 水:"+total.水;
-}
-
+showSpace();
 show();
 calc();
 
