@@ -1,64 +1,179 @@
+HTML
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>ゆくり</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ゆくり</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: "Hiragino Mincho ProN", serif;
+  background: #f8f6f2;
+  color: #2f2f2f;
+}
+
+.container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 40px 22px;
+}
+
+h1 {
+  text-align: center;
+  font-weight: normal;
+  margin-bottom: 50px;
+  letter-spacing: 0.1em;
+}
+
+.section {
+  margin-bottom: 28px;
+}
+
+label {
+  font-size: 13px;
+  color: #777;
+}
+
+input, select {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #e5e2dc;
+  padding: 12px 5px;
+  font-size: 15px;
+  background: transparent;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-bottom: 1px solid #cfcac2;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid #e5e2dc;
+  margin-top: 30px;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+}
+
+button:active {
+  background: #efece6;
+}
+
+.record {
+  font-size: 13px;
+  color: #444;
+  padding: 14px 0;
+  border-bottom: 1px solid #eee9e2;
+}
+</style>
+
 </head>
 <body>
 
-  <h1>ゆくり</h1>
+<div class="container">
 
-  <h2>記録</h2>
+<h1>ゆくり</h1>
 
-  <label>体調：</label><br>
-  <input type="text" id="health"><br><br>
+<div class="section">
+<label>場</label>
+<select id="place">
+<option>家（居間）</option>
+<option>寝室 北</option>
+<option>寝室 南</option>
+<option>南西の部屋</option>
+<option>アトリエ</option>
+<option>車</option>
+<option>外出</option>
+</select>
+</div>
 
-  <label>五行：</label><br>
-  <input type="text" id="fiveElements"><br><br>
+<div class="section">
+<label>体調</label>
+<input type="text" id="health">
+</div>
 
-  <label>石：</label><br>
-  <input type="text" id="stone"><br><br>
+<div class="section">
+<label>五行</label>
+<select id="fiveElements">
+<option>木</option>
+<option>火</option>
+<option>土</option>
+<option>金</option>
+<option>水</option>
+</select>
+</div>
 
-  <label>香り：</label><br>
-  <input type="text" id="scent"><br><br>
+<div class="section">
+<label>石</label>
+<input type="text" id="stone">
+</div>
 
-  <button onclick="saveData()">保存</button>
+<div class="section">
+<label>香り</label>
+<input type="text" id="scent">
+</div>
 
-  <h2>記録一覧</h2>
-  <ul id="list"></ul>
+<div class="section">
+<label>お茶</label>
+<input type="text" id="tea">
+</div>
 
-  <script>
-    function saveData() {
-      const data = {
-        health: document.getElementById('health').value,
-        fiveElements: document.getElementById('fiveElements').value,
-        stone: document.getElementById('stone').value,
-        scent: document.getElementById('scent').value,
-        time: new Date().toLocaleString()
-      };
+<button onclick="saveData()">記す</button>
 
-      let records = JSON.parse(localStorage.getItem('records') || '[]');
-      records.push(data);
-      localStorage.setItem('records', JSON.stringify(records));
+<div class="section">
+<div id="list"></div>
+</div>
 
-      displayData();
-    }
+</div>
 
-    function displayData() {
-      const list = document.getElementById('list');
-      list.innerHTML = '';
+<script>
+function saveData() {
+  const data = {
+    place: document.getElementById('place').value,
+    health: document.getElementById('health').value,
+    fiveElements: document.getElementById('fiveElements').value,
+    stone: document.getElementById('stone').value,
+    scent: document.getElementById('scent').value,
+    tea: document.getElementById('tea').value,
+    time: new Date().toLocaleString()
+  };
 
-      let records = JSON.parse(localStorage.getItem('records') || '[]');
+  let records = JSON.parse(localStorage.getItem('records') || '[]');
+  records.unshift(data);
+  localStorage.setItem('records', JSON.stringify(records));
 
-      records.forEach(r => {
-        const li = document.createElement('li');
-        li.textContent = `${r.time}｜体調:${r.health}｜五行:${r.fiveElements}｜石:${r.stone}｜香り:${r.scent}`;
-        list.appendChild(li);
-      });
-    }
+  displayData();
+}
 
-    displayData();
-  </script>
+function displayData() {
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+
+  let records = JSON.parse(localStorage.getItem('records') || '[]');
+
+  records.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'record';
+    div.innerHTML = `
+      <div>${r.time}</div>
+      <div>場：${r.place}</div>
+      <div>体調：${r.health}</div>
+      <div>五行：${r.fiveElements}</div>
+      <div>石：${r.stone}</div>
+      <div>香り：${r.scent}</div>
+      <div>お茶：${r.tea}</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+displayData();
+</script>
 
 </body>
-</html>
+  </html>
