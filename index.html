@@ -34,7 +34,7 @@ label {
   color: #777;
 }
 
-input, select {
+select, input {
   width: 100%;
   border: none;
   border-bottom: 1px solid #ddd;
@@ -54,15 +54,8 @@ button {
   font-size: 13px;
 }
 
-.suggest {
-  font-size: 13px;
-  color: #666;
-  margin-top: 5px;
-}
-
 .balance {
   margin: 20px 0;
-  font-size: 14px;
 }
 </style>
 </head>
@@ -74,29 +67,24 @@ button {
 
 <div class="section">
 <label>場</label>
-<select id="place" onchange="suggest()">
+<select id="place">
 <option>寝室 北</option>
 <option>寝室 南</option>
 <option>南西の部屋</option>
 <option>アトリエ</option>
 <option>車</option>
 </select>
-<div class="suggest" id="suggest"></div>
 </div>
 
 <div class="section">
-<label>体調</label>
-<input id="health">
-</div>
-
-<div class="section">
-<label>五行</label>
-<select id="five">
-<option>木</option>
-<option>火</option>
-<option>土</option>
-<option>金</option>
-<option>水</option>
+<label>体調（複数選択）</label>
+<select id="health" multiple>
+<option value="水">冷え</option>
+<option value="水">腰痛</option>
+<option value="火">寝不足</option>
+<option value="木">肩こり</option>
+<option value="火">頭痛</option>
+<option value="土">だるさ</option>
 </select>
 </div>
 
@@ -136,39 +124,19 @@ button {
 
 <script>
 
-// 🌿 場ごとのおすすめ
-function suggest(){
-  const place = document.getElementById('place').value;
-  let text = "";
-
-  if(place==="寝室 北"){
-    text = "静けさ：アメジスト / セレナイト";
-  }
-  if(place==="寝室 南"){
-    text = "やわらかさ：チャロアイト";
-  }
-  if(place==="南西の部屋"){
-    text = "安定：フローライト";
-  }
-  if(place==="アトリエ"){
-    text = "創造：ラピスラズリ";
-  }
-  if(place==="車"){
-    text = "守り：チャロアイト";
-  }
-
-  document.getElementById('suggest').innerText = text;
-}
-
-// 🌿 保存
 function save(){
+  const selected = Array.from(health.selectedOptions).map(o=>o.value);
+
+  let count = {木:0,火:0,土:0,金:0,水:0};
+  selected.forEach(v=>count[v]++);
+
   const data = {
     place: place.value,
-    health: health.value,
-    five: five.value,
+    health: selected,
     stone: Array.from(stone.selectedOptions).map(o=>o.value),
     scent: Array.from(scent.selectedOptions).map(o=>o.value),
-    tea: tea.value
+    tea: tea.value,
+    balance: count
   };
 
   let records = JSON.parse(localStorage.getItem('r')||'[]');
@@ -179,7 +147,6 @@ function save(){
   calc();
 }
 
-// 🌿 表示
 function show(){
   let records = JSON.parse(localStorage.getItem('r')||'[]');
   list.innerHTML="";
@@ -187,29 +154,99 @@ function show(){
   records.forEach(r=>{
     let d=document.createElement('div');
     d.className="record";
-    d.innerHTML=`${r.place}｜${r.five}｜石:${r.stone.join()}｜香り:${r.scent.join()}`;
+    d.innerHTML=`${r.place}｜体調:${r.health.join()}｜石:${r.stone.join()}｜香り:${r.scent.join()}`;
     list.appendChild(d);
   });
 }
 
-// 🌿 五行バランス
 function calc(){
   let records = JSON.parse(localStorage.getItem('r')||'[]');
-  let count = {木:0,火:0,土:0,金:0,水:0};
+  let total = {木:0,火:0,土:0,金:0,水:0};
 
   records.forEach(r=>{
-    count[r.five]++;
+    for(let k in r.balance){
+      total[k]+=r.balance[k];
+    }
   });
 
-  balance.innerText = 
-    "木:"+count.木+" 火:"+count.火+" 土:"+count.土+" 金:"+count.金+" 水:"+count.水;
+  balance.innerText =
+   "五行バランス → 木:"+total.木+" 火:"+total.火+" 土:"+total.土+" 金:"+total.金+" 水:"+total.水;
+
+  message(total);
 }
 
-suggest();
+function message(total){
+  let max = Object.keys(total).reduce((a,b)=> total[a]>total[b]?a:b);
+
+  let msg = "";
+
+  if(max=="水") msg="あたためて、安心する時間を";
+  if(max=="火") msg="静かに、落ち着きを取り戻す日";
+  if(max=="木") msg="流れをよくして、巡らせる";
+  if(max=="土") msg="ゆっくり整えて、満たす";
+  if(max=="金") msg="手放して、軽くする";
+
+  document.getElementById("balance").innerHTML += "<br><br>🌿 "+msg;
+}
+
+show();
+calc();
+
+  </t>
+
+function save(){
+  const selected = Array.from(health.selectedOptions).map(o=>o.value);
+
+  let count = {木:0,火:0,土:0,金:0,水:0};
+  selected.forEach(v=>count[v]++);
+
+  const data = {
+    place: place.value,
+    health: selected,
+    stone: Array.from(stone.selectedOptions).map(o=>o.value),
+    scent: Array.from(scent.selectedOptions).map(o=>o.value),
+    tea: tea.value,
+    balance: count
+  };
+
+  let records = JSON.parse(localStorage.getItem('r')||'[]');
+  records.unshift(data);
+  localStorage.setItem('r', JSON.stringify(records));
+
+  show();
+  calc();
+}
+
+function show(){
+  let records = JSON.parse(localStorage.getItem('r')||'[]');
+  list.innerHTML="";
+
+  records.forEach(r=>{
+    let d=document.createElement('div');
+    d.className="record";
+    d.innerHTML=`${r.place}｜体調:${r.health.join()}｜石:${r.stone.join()}｜香り:${r.scent.join()}`;
+    list.appendChild(d);
+  });
+}
+
+function calc(){
+  let records = JSON.parse(localStorage.getItem('r')||'[]');
+  let total = {木:0,火:0,土:0,金:0,水:0};
+
+  records.forEach(r=>{
+    for(let k in r.balance){
+      total[k]+=r.balance[k];
+    }
+  });
+
+  balance.innerText =
+   "五行バランス → 木:"+total.木+" 火:"+total.火+" 土:"+total.土+" 金:"+total.金+" 水:"+total.水;
+}
+
 show();
 calc();
 
 </script>
 
 </body>
-  </html>
+</html>
